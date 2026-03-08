@@ -11,7 +11,7 @@ export default function Sidebar() {
         </div>
         <h3 className="font-bold text-gray-800 text-lg">Admin Chém Gió</h3>
         <p className="text-gray-500 text-xs mt-2 italic">
-          "Kỹ sư tay ngang đi buôn chứng. Chia sẻ những bài học thực tế nhất."
+          "kể chuyện F0 đi buôn chứng khoán. Chia sẻ những bài học thực tế nhất."
         </p>
       </div>
 
