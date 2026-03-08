@@ -1,36 +1,60 @@
 // src/app/post/[id]/page.tsx
 import { getPostById } from "../../../lib/blogger";
+import { notFound } from 'next/navigation';
 
-// Quan trọng: dynamicParams = true không hoạt động với output: export.
-// Trong chế độ export tĩnh, Next.js yêu cầu tất cả các path phải có sẵn hoặc xử lý phía client.
-// Nhưng để vượt qua bước Build, ta giữ generateStaticParams rỗng.
+// Cấu hình bắt buộc cho Cloudflare Pages (Static Export)
+export const dynamic = 'force-static';
+export const dynamicParams = false; 
 
+const BLOG_ID = '8860933158336876517';
+const API_KEY = 'AIzaSyBkeq3GH90DX_eehyYRMiGTT72zcoNazsQ';
+
+/**
+ * Hàm lấy danh sách ID bài viết để tạo file HTML tĩnh
+ */
+export async function generateStaticParams() {
+  try {
+    const res = await fetch(
+      `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}&fields=items(id)&maxResults=500`
+    );
+
+    const data = await res.json();
+
+    if (!data.items || !Array.isArray(data.items)) {
+      console.warn("⚠️ Không tìm thấy bài viết hoặc API lỗi. Đang trả về mảng rỗng.");
+      return [];
+    }
+
+    return data.items.map((post: any) => ({
+      id: post.id.toString(),
+    }));
+  } catch (error) {
+    console.error("❌ Lỗi Build tại generateStaticParams:", error);
+    return [];
+  }
+}
+
+/**
+ * Trang chi tiết bài viết
+ */
 export default async function PostDetail({ params }: { params: Promise<{ id: string }> }) {
-  // 1. Await params theo chuẩn Next.js 15
   const { id } = await params;
+  
+  // Gọi hàm lấy chi tiết bài viết từ file lib của bạn
   const post = await getPostById(id);
 
-  // 2. Xử lý trường hợp không tìm thấy bài viết
   if (!post) {
-    return (
-      <div className="py-20 text-center bg-white rounded-3xl border border-gray-100 shadow-sm">
-        <h1 className="text-2xl font-bold text-red-500">Lỗi: Không tìm thấy bài viết!</h1>
-        <p className="mt-4 text-gray-500">ID bài viết có thể không tồn tại hoặc dữ liệu chưa kịp tải.</p>
-        <a href="/" className="mt-6 inline-block text-[#ff7a18] font-bold hover:underline">
-          ← Quay về trang chủ
-        </a>
-      </div>
-    );
+    return notFound();
   }
 
   return (
-    <article className="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-gray-100">
+    <article className="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-gray-100 max-w-4xl mx-auto my-10">
       <header className="mb-10">
-        <a href="/" className="text-[#ff7a18] text-sm font-bold mb-6 inline-block hover:translate-x-[-5px] transition-transform">
+        <a href="/" className="text-[#ff7a18] text-sm font-bold mb-6 inline-block hover:-translate-x-1 transition-transform">
           ← Quay lại trang chủ
         </a>
         
-        <h1 className="text-2xl md:text-2xl font-black text-gray-900 leading-tight mb-6">
+        <h1 className="text-2xl md:text-3xl font-black text-gray-900 leading-tight mb-6">
           {post.title}
         </h1>
 
@@ -41,32 +65,27 @@ export default async function PostDetail({ params }: { params: Promise<{ id: str
           {post.labels && (
             <div className="flex gap-2">
               {post.labels.map((label: string) => (
-                <span key={label} className="text-xs text-gray-500 underline">#{label}</span>
+                <span key={label} className="text-xs text-gray-500 italic">#{label}</span>
               ))}
             </div>
           )}
         </div>
       </header>
 
-      {/* 4. Nội dung bài viết */}
+      {/* Nội dung bài viết từ Blogger */}
       <div 
         className="prose prose-lg max-w-none prose-orange 
           prose-headings:font-black prose-headings:text-gray-900
-          prose-img:mx-auto prose-img:block prose-img:rounded-2xl prose-img:shadow-lg
-          [&_a]:flex [&_a]:justify-center 
+          prose-img:mx-auto prose-img:block prose-img:rounded-2xl prose-img:shadow-md
+          [&_a]:text-[#ff7a18] [&_a]:font-bold
           [&_div.separator]:flex [&_div.separator]:justify-center 
           [&_div.tr-caption-container]:mx-auto [&_div.tr-caption-container]:text-center"
         dangerouslySetInnerHTML={{ __html: post.content }} 
       />
 
       <footer className="mt-16 pt-8 border-t border-gray-100 text-center">
-        <p className="text-gray-400 italic text-sm">Cảm ơn bạn đã theo dõi Blog Chém Gió!</p>
+        <p className="text-gray-400 italic text-sm">Cảm ơn bạn đã đọc bài viết tại Blog Chém Gió!</p>
       </footer>
     </article>
   );
-}
-
-// SỬA LẠI HÀM NÀY: Thêm async để chuẩn hóa với Next.js 15
-export async function generateStaticParams() {
-  return [];
 }
