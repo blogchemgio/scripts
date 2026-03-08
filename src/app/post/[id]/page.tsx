@@ -1,11 +1,12 @@
 // src/app/post/[id]/page.tsx
 import { getPostById } from "../../../lib/blogger";
 
-// Thêm cái này để hỗ trợ build tĩnh
-export const dynamicParams = true;
+// Quan trọng: dynamicParams = true không hoạt động với output: export.
+// Trong chế độ export tĩnh, Next.js yêu cầu tất cả các path phải có sẵn hoặc xử lý phía client.
+// Nhưng để vượt qua bước Build, ta giữ generateStaticParams rỗng.
 
 export default async function PostDetail({ params }: { params: Promise<{ id: string }> }) {
-  // 1. Với Next.js bản mới, params cần được "await" để lấy ID
+  // 1. Await params theo chuẩn Next.js 15
   const { id } = await params;
   const post = await getPostById(id);
 
@@ -14,7 +15,7 @@ export default async function PostDetail({ params }: { params: Promise<{ id: str
     return (
       <div className="py-20 text-center bg-white rounded-3xl border border-gray-100 shadow-sm">
         <h1 className="text-2xl font-bold text-red-500">Lỗi: Không tìm thấy bài viết!</h1>
-        <p className="mt-4 text-gray-500">ID bài viết có thể không tồn tại hoặc API bị chặn.</p>
+        <p className="mt-4 text-gray-500">ID bài viết có thể không tồn tại hoặc dữ liệu chưa kịp tải.</p>
         <a href="/" className="mt-6 inline-block text-[#ff7a18] font-bold hover:underline">
           ← Quay về trang chủ
         </a>
@@ -22,7 +23,6 @@ export default async function PostDetail({ params }: { params: Promise<{ id: str
     );
   }
 
-  // 3. Giao diện chi tiết bài viết
   return (
     <article className="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-gray-100">
       <header className="mb-10">
@@ -64,9 +64,9 @@ export default async function PostDetail({ params }: { params: Promise<{ id: str
       </footer>
     </article>
   );
-} // Đã có dấu đóng ngoặc chuẩn ở đây
+}
 
-// --- THÊM ĐOẠN NÀY ĐỂ FIX LỖI BUILD TRÊN CLOUDFLARE ---
-export function generateStaticParams() {
+// SỬA LẠI HÀM NÀY: Thêm async để chuẩn hóa với Next.js 15
+export async function generateStaticParams() {
   return [];
 }
