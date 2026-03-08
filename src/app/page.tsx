@@ -1,5 +1,6 @@
 // src/app/page.tsx
 import { getPosts } from "../lib/blogger";
+export const runtime = 'edge'; // Phải có 'export const' ở đầu dòng này
 
 export default async function Home() {
   const data = await getPosts(12); // Lấy 12 bài để chia hết cho 3 cột
