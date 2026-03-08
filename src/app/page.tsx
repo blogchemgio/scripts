@@ -9,14 +9,15 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
   
-  // CẤU HÌNH MỚI: 9 bài mỗi trang để tạo 3 hàng x 3 cột
-  const postsPerPage = 9; 
+  // Cấu hình: 6 bài mỗi trang (2 hàng x 3 cột trên Desktop)
+  const postsPerPage = 6; 
 
   useEffect(() => {
     async function fetchData() {
       try {
-        // Tải 27 hoặc 36 bài để chia hết cho 9, giúp có khoảng 3-4 trang đầu cực nhanh
-        const data = await getPosts(36); 
+        // Tải 24 bài để người dùng xem được 4 trang đầu (6x4=24)
+        // Lượng data này cực nhẹ, giúp đạt điểm PageSpeed tối đa
+        const data = await getPosts(24); 
         setAllPosts(data.items || []);
       } catch (error) {
         console.error("Lỗi khi lấy bài viết:", error);
@@ -27,7 +28,7 @@ export default function Home() {
     fetchData();
   }, []);
 
-  // Logic phân trang
+  // Logic phân trang phía Client
   const totalPages = Math.ceil(allPosts.length / postsPerPage);
   const posts = allPosts.slice((currentPage - 1) * postsPerPage, currentPage * postsPerPage);
 
@@ -65,7 +66,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Grid bài viết: 9 bài (3 hàng x 3 cột trên Desktop) */}
+      {/* Grid bài viết: 6 bài (2 hàng x 3 cột) */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
         {posts.map((post: any) => {
           const imgMatch = post.content.match(/<img[^>]+src="([^">]+)"/);
@@ -79,7 +80,8 @@ export default function Home() {
               key={post.id} 
               className="group bg-white rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl flex flex-col h-full"
             >
-              <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
+              {/* Ảnh tỷ lệ 16:9 hiện đại */}
+              <div className="relative aspect-[16/9] overflow-hidden bg-gray-50">
                 <img 
                   src={firstImg} 
                   alt={post.title} 
@@ -87,12 +89,13 @@ export default function Home() {
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                 />
                 <div className="absolute bottom-3 left-3">
-                  <span className="text-[9px] font-black px-3 py-1.5 bg-[#ff7a18]/90 text-white backdrop-blur-md rounded-lg">
-                    {post.labels?.[0] || 'Phân Tích'}
+                  <span className="text-[9px] font-black px-3 py-1.5 bg-[#ff7a18]/90 text-white backdrop-blur-md rounded-lg shadow-sm uppercase tracking-wider">
+                    {post.labels?.[0] || 'Chứng Khoán'}
                   </span>
                 </div>
               </div>
 
+              {/* Nội dung bài viết */}
               <div className="p-6 flex flex-col flex-grow">
                 <h3 className="text-md font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-[#ff7a18] transition-colors leading-snug">
                   {post.title}
