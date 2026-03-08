@@ -1,6 +1,6 @@
 // src/app/post/[id]/page.tsx
 import { getPostById } from "../../../lib/blogger";
-export const runtime = 'edge';
+
 export default async function PostDetail({ params }: { params: Promise<{ id: string }> }) {
   // 1. Với Next.js bản mới, params cần được "await" để lấy ID
   const { id } = await params;
