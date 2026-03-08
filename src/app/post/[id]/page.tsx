@@ -5,14 +5,19 @@ import { notFound } from 'next/navigation';
 export const dynamic = 'force-static';
 export const dynamicParams = false; 
 
-// Thông tin Blogger của bạn
-const BLOG_ID = process.env.BLOGGER_BLOG_ID;
-const API_KEY = process.env.BLOGGER_API_KEY;
-
 /**
  * Hàm lấy danh sách ID bài viết để tạo file HTML tĩnh lúc Build
  */
 export async function generateStaticParams() {
+  // Đưa biến vào bên trong hàm để đảm bảo Next.js nạp đúng lúc build
+  const BLOG_ID = process.env.NEXT_PUBLIC_BLOGGER_BLOG_ID;
+  const API_KEY = process.env.NEXT_PUBLIC_BLOGGER_API_KEY;
+
+  if (!BLOG_ID || !API_KEY) {
+    console.error("❌ Thiếu biến môi trường NEXT_PUBLIC_... trên Cloudflare");
+    return [];
+  }
+
   try {
     const res = await fetch(
       `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}&fields=items(id)&maxResults=500`,
@@ -22,7 +27,6 @@ export async function generateStaticParams() {
     const data = await res.json();
 
     if (!data.items || !Array.isArray(data.items)) {
-      console.warn("⚠️ Không tìm thấy bài viết hoặc API lỗi.");
       return [];
     }
 
@@ -39,11 +43,9 @@ export async function generateStaticParams() {
  * Trang chi tiết bài viết
  */
 export default async function PostDetail({ params }: { params: Promise<{ id: string }> }) {
-  // 1. Await params theo chuẩn Next.js 15
   const { id } = await params;
   
-  // 2. Gọi hàm lấy chi tiết bài viết
-  // LƯU Ý: Đảm bảo hàm getPostById bên file lib cũng đang dùng API_KEY này
+  // Gọi hàm lấy chi tiết bài viết (Hàm này trong lib/blogger.ts cũng nên dùng biến process.env)
   const post = await getPostById(id);
 
   if (!post) {
@@ -75,7 +77,6 @@ export default async function PostDetail({ params }: { params: Promise<{ id: str
         </div>
       </header>
 
-      {/* Nội dung bài viết từ Blogger */}
       <div 
         className="prose prose-lg max-w-none prose-orange 
           prose-headings:font-black prose-headings:text-gray-900
