@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  //output: 'export', // Bắt buộc để ra thư mục 'out'
+  output: 'export', // BỎ DẤU // Ở ĐÂY ĐỂ KÍCH HOẠT XUẤT FILE TĨNH
   images: {
     unoptimized: true, 
   },
