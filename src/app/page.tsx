@@ -13,7 +13,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getPosts(100); 
+        const data = await getPosts(20); 
         setAllPosts(data.items || []);
       } catch (error) {
         console.error("Lỗi khi lấy bài viết:", error);
