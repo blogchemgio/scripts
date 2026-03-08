@@ -8,12 +8,15 @@ export default function Home() {
   const [allPosts, setAllPosts] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
-  const postsPerPage = 9;
+  
+  // CẤU HÌNH MỚI: 9 bài mỗi trang để tạo 3 hàng x 3 cột
+  const postsPerPage = 9; 
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getPosts(20); 
+        // Tải 27 hoặc 36 bài để chia hết cho 9, giúp có khoảng 3-4 trang đầu cực nhanh
+        const data = await getPosts(36); 
         setAllPosts(data.items || []);
       } catch (error) {
         console.error("Lỗi khi lấy bài viết:", error);
@@ -52,22 +55,23 @@ export default function Home() {
       </div>
 
       {/* Tiêu đề danh sách */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between px-2">
         <div className="flex items-center gap-3">
           <div className="h-6 w-2 bg-[#ff7a18] rounded-full"></div>
           <h2 className="text-xl font-bold text-gray-800 uppercase tracking-tight">Mới cập nhật</h2>
         </div>
-        <span className="text-xs text-gray-400 font-medium">Trang {currentPage} / {totalPages}</span>
+        <div className="text-[10px] font-bold text-gray-400 bg-gray-50 px-3 py-1 rounded-full border border-gray-100 uppercase tracking-widest">
+          Trang {currentPage} / {totalPages}
+        </div>
       </div>
 
-      {/* Grid bài viết */}
+      {/* Grid bài viết: 9 bài (3 hàng x 3 cột trên Desktop) */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
         {posts.map((post: any) => {
-          // Xử lý ảnh và nội dung
           const imgMatch = post.content.match(/<img[^>]+src="([^">]+)"/);
           const firstImg = imgMatch ? imgMatch[1] : "https://via.placeholder.com/600x400?text=Blog+Chemgio";
           const cleanText = post.content.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-          const excerpt = cleanText.substring(0, 120) + "...";
+          const excerpt = cleanText.substring(0, 110) + "...";
 
           return (
             <Link 
@@ -75,37 +79,33 @@ export default function Home() {
               key={post.id} 
               className="group bg-white rounded-[2rem] overflow-hidden shadow-sm border border-gray-100 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl flex flex-col h-full"
             >
-              {/* Ảnh đại diện tỷ lệ 16:9 hiện đại */}
-              <div className="relative aspect-[16/9] overflow-hidden">
+              <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
                 <img 
                   src={firstImg} 
                   alt={post.title} 
                   loading="lazy"
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 <div className="absolute bottom-3 left-3">
-                  <span className="text-[10px] uppercase tracking-widest text-white font-bold px-3 py-1 bg-[#ff7a18]/90 backdrop-blur-md rounded-lg shadow-sm">
-                    {post.labels?.[0] || 'F0 Trading'}
+                  <span className="text-[9px] font-black px-3 py-1.5 bg-[#ff7a18]/90 text-white backdrop-blur-md rounded-lg">
+                    {post.labels?.[0] || 'Phân Tích'}
                   </span>
                 </div>
               </div>
 
-              {/* Nội dung bài viết */}
               <div className="p-6 flex flex-col flex-grow">
-                <h3 className="text-md font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-[#ff7a18] transition-colors leading-tight">
+                <h3 className="text-md font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-[#ff7a18] transition-colors leading-snug">
                   {post.title}
                 </h3>
-                <p className="text-gray-500 text-[13px] leading-relaxed line-clamp-3 mb-6 italic">
+                <p className="text-gray-500 text-[12px] leading-relaxed line-clamp-3 mb-6 italic">
                   {excerpt}
                 </p>
-                
                 <div className="mt-auto pt-4 border-t border-gray-50 flex justify-between items-center">
-                  <span className="text-[11px] text-gray-400 font-medium">
+                  <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">
                     {new Date(post.published).toLocaleDateString('vi-VN')}
                   </span>
-                  <span className="text-[11px] font-black text-[#ff7a18] tracking-widest flex items-center gap-1 group-hover:gap-2 transition-all">
-                    XEM NGAY <span className="text-lg">→</span>
+                  <span className="text-[10px] font-black text-[#ff7a18] tracking-widest flex items-center gap-1 group-hover:gap-2 transition-all">
+                    ĐỌC TIẾP <span className="text-lg">→</span>
                   </span>
                 </div>
               </div>
@@ -124,10 +124,10 @@ export default function Home() {
                 setCurrentPage(p);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className={`min-w-[40px] h-10 flex items-center justify-center rounded-xl text-sm font-bold transition-all duration-300 ${
+              className={`min-w-[42px] h-10 flex items-center justify-center rounded-xl text-xs font-black transition-all duration-300 ${
                 currentPage === p 
-                ? "bg-[#ff7a18] text-white shadow-lg shadow-orange-200 scale-110" 
-                : "bg-white border border-gray-100 text-gray-500 hover:border-[#ff7a18] hover:text-[#ff7a18]"
+                ? "bg-[#ff7a18] text-white shadow-xl shadow-orange-200 scale-110 border border-[#ff7a18]" 
+                : "bg-white border border-gray-100 text-gray-400 hover:border-[#ff7a18] hover:text-[#ff7a18]"
               }`}
             >
               {p}
