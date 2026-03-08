@@ -1,24 +1,17 @@
-// src/lib/blogger.ts
+const BLOG_ID = '8860933158336876517';
+const API_KEY = 'AIzaSyBkeq3GH90DX_eehyYRMiGTT72zcoNazsQ';
 
-const API_KEY = process.env.BLOGGER_API_KEY;
-const BLOG_ID = process.env.BLOG_ID;
-
-// Hàm lấy danh sách nhiều bài (dùng cho trang chủ)
-export async function getPosts(maxResults = 9) {
-  const url = `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}&maxResults=${maxResults}`;
-  const res = await fetch(url, { next: { revalidate: 60 } });
-  if (!res.ok) return { items: [] };
+export async function getPostById(id: string) {
+  const res = await fetch(
+    `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts/${id}?key=${API_KEY}`
+  );
+  if (!res.ok) return null;
   return res.json();
 }
 
-// HÀM MỚI: Lấy chi tiết 1 bài duy nhất (dùng cho trang [id])
-export async function getPostById(postId: string) {
-  const url = `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts/${postId}?key=${API_KEY}`;
-  const res = await fetch(url, { next: { revalidate: 60 } });
-  
-  if (!res.ok) {
-    console.error("Lỗi API Blogger khi lấy bài viết:", postId);
-    return null;
-  }
+export async function getPosts(maxResults = 10) {
+  const res = await fetch(
+    `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}&maxResults=${maxResults}`
+  );
   return res.json();
 }

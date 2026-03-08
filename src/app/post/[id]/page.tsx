@@ -1,4 +1,3 @@
-// src/app/post/[id]/page.tsx
 import { getPostById } from "../../../lib/blogger";
 import { notFound } from 'next/navigation';
 
@@ -6,22 +5,24 @@ import { notFound } from 'next/navigation';
 export const dynamic = 'force-static';
 export const dynamicParams = false; 
 
+// Thông tin Blogger của bạn
 const BLOG_ID = '8860933158336876517';
 const API_KEY = 'AIzaSyBkeq3GH90DX_eehyYRMiGTT72zcoNazsQ';
 
 /**
- * Hàm lấy danh sách ID bài viết để tạo file HTML tĩnh
+ * Hàm lấy danh sách ID bài viết để tạo file HTML tĩnh lúc Build
  */
 export async function generateStaticParams() {
   try {
     const res = await fetch(
-      `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}&fields=items(id)&maxResults=500`
+      `https://www.googleapis.com/blogger/v3/blogs/${BLOG_ID}/posts?key=${API_KEY}&fields=items(id)&maxResults=500`,
+      { next: { revalidate: 3600 } }
     );
 
     const data = await res.json();
 
     if (!data.items || !Array.isArray(data.items)) {
-      console.warn("⚠️ Không tìm thấy bài viết hoặc API lỗi. Đang trả về mảng rỗng.");
+      console.warn("⚠️ Không tìm thấy bài viết hoặc API lỗi.");
       return [];
     }
 
@@ -38,13 +39,15 @@ export async function generateStaticParams() {
  * Trang chi tiết bài viết
  */
 export default async function PostDetail({ params }: { params: Promise<{ id: string }> }) {
+  // 1. Await params theo chuẩn Next.js 15
   const { id } = await params;
   
-  // Gọi hàm lấy chi tiết bài viết từ file lib của bạn
+  // 2. Gọi hàm lấy chi tiết bài viết
+  // LƯU Ý: Đảm bảo hàm getPostById bên file lib cũng đang dùng API_KEY này
   const post = await getPostById(id);
 
   if (!post) {
-    return notFound();
+    notFound();
   }
 
   return (
