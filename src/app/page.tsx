@@ -1,4 +1,5 @@
 // src/app/page.tsx
+export const dynamic = "force-dynamic"; // Thêm dòng này là nó load file động
 import { getPosts } from "../lib/blogger";
 import Link from "next/link";
 
