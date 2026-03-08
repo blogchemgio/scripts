@@ -24,7 +24,7 @@
   /* Xử lý các khung bọc ảnh đặc thù của Blogger */
   .prose .separator, 
   .prose .tr-caption-container {
-    @apply flex flex-col items-center justify-center mx-auto !important;
+    @apply !flex !flex-col !items-center !justify-center !mx-auto ;
     text-align: center;
   }
   
