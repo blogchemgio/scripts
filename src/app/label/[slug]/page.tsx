@@ -1,14 +1,14 @@
 import { getPosts } from "@/lib/blogger";
 
-export default async function LabelPage({ params }: { params: { slug: string } }) {
-  // Giải mã slug từ URL (ví dụ: chung-khoan)
-  const slug = params.slug;
+export default async function LabelPage({ params }: { params: Promise<{ slug: string }> }) {
+  // Với Next.js 15, params nên được await
+  const { slug } = await params;
   
-  // Lấy dữ liệu (Lưu ý: Bạn có thể cần chỉnh hàm getPosts để lọc theo nhãn)
+  // Lấy dữ liệu bài viết
   const data = await getPosts(20); 
   const allPosts = data.items || [];
 
-  // Logic lọc bài viết có nhãn trùng với slug (tạm thời lọc theo text gần đúng)
+  // Logic lọc bài viết có nhãn trùng với slug
   const filteredPosts = allPosts.filter((post: any) => 
     post.labels?.some((l: string) => 
       l.toLowerCase().replace(/\s+/g, '-') === slug
@@ -27,14 +27,17 @@ export default async function LabelPage({ params }: { params: { slug: string } }
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {filteredPosts.map((post: any) => (
-           // Tái sử dụng giao diện card bài viết của bạn ở đây
-           <div key={post.id} className="..."> 
-              {/* Copy code Card bài viết từ trang chủ vào đây */}
+           <div key={post.id} className="border p-4 rounded-lg shadow-sm"> 
+              <h2 className="font-bold text-xl mb-2">{post.title}</h2>
+              {/* Bạn có thể thêm ảnh và mô tả bài viết ở đây */}
            </div>
         ))}
       </div>
     </main>
   );
+} // <--- DẤU NÀY CỰC KỲ QUAN TRỌNG, NÓ KẾT THÚC HÀM LABELPAGE
+
+// Hàm này phải nằm tách biệt hoàn toàn bên ngoài
 export function generateStaticParams() {
   return [];
 }

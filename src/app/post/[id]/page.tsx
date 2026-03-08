@@ -1,6 +1,9 @@
 // src/app/post/[id]/page.tsx
 import { getPostById } from "../../../lib/blogger";
 
+// Thêm cái này để hỗ trợ build tĩnh
+export const dynamicParams = true;
+
 export default async function PostDetail({ params }: { params: Promise<{ id: string }> }) {
   // 1. Với Next.js bản mới, params cần được "await" để lấy ID
   const { id } = await params;
@@ -27,7 +30,6 @@ export default async function PostDetail({ params }: { params: Promise<{ id: str
           ← Quay lại trang chủ
         </a>
         
-        {/* Tiêu đề bài viết - Đã chỉnh text-2xl theo ý bạn */}
         <h1 className="text-2xl md:text-2xl font-black text-gray-900 leading-tight mb-6">
           {post.title}
         </h1>
@@ -46,15 +48,11 @@ export default async function PostDetail({ params }: { params: Promise<{ id: str
         </div>
       </header>
 
-      {/* 4. Nội dung bài viết từ Blogger với các class ép căn giữa ảnh */}
+      {/* 4. Nội dung bài viết */}
       <div 
         className="prose prose-lg max-w-none prose-orange 
           prose-headings:font-black prose-headings:text-gray-900
-          
-          /* Ép ảnh căn giữa tuyệt đối */
           prose-img:mx-auto prose-img:block prose-img:rounded-2xl prose-img:shadow-lg
-          
-          /* Ép các thẻ bọc của Blogger (thẻ a, div separator) phải căn giữa */
           [&_a]:flex [&_a]:justify-center 
           [&_div.separator]:flex [&_div.separator]:justify-center 
           [&_div.tr-caption-container]:mx-auto [&_div.tr-caption-container]:text-center"
@@ -66,4 +64,9 @@ export default async function PostDetail({ params }: { params: Promise<{ id: str
       </footer>
     </article>
   );
+} // Đã có dấu đóng ngoặc chuẩn ở đây
+
+// --- THÊM ĐOẠN NÀY ĐỂ FIX LỖI BUILD TRÊN CLOUDFLARE ---
+export function generateStaticParams() {
+  return [];
 }
