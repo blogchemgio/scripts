@@ -1,0 +1,54 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@layer base {
+  /* 1. Tùy chỉnh các thẻ tiêu đề trong nội dung bài viết (prose) */
+  .prose h1 {
+    /* Đã chỉnh bé lại theo ý bạn: 2xl */
+    @apply text-2xl md:text-2xl font-black mt-8 mb-4 text-gray-900 leading-tight;
+  }
+
+  .prose h2 {
+    @apply text-xl md:text-2xl font-black mt-10 mb-5 border-l-4 border-[#ff7a18] pl-4 text-gray-900;
+  }
+
+  .prose h3 {
+    @apply text-lg md:text-xl font-bold mt-8 mb-4 text-gray-800;
+  }
+
+  /* 2. Ép ảnh trong bài viết căn giữa và bo góc đẹp */
+  .prose img {
+    @apply mx-auto my-8 block shadow-md rounded-2xl;
+  }
+
+  /* Xử lý các khung bọc ảnh đặc thù của Blogger */
+  .prose .separator, 
+  .prose .tr-caption-container {
+    @apply flex flex-col items-center justify-center mx-auto !important;
+    text-align: center;
+  }
+  
+  .prose figure {
+    @apply flex flex-col items-center mx-auto;
+  }
+
+  /* 3. Cấu hình nền và font chữ cơ bản cho toàn trang */
+  body {
+    @apply bg-[#f9fafb] text-gray-800;
+  }
+}
+
+:root {
+  --primary: #ff7a18;
+  --bg-gray: #f9fafb;
+}
+
+/* 4. Các class bổ trợ ngoài hệ thống prose */
+.post-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Nếu bạn muốn dùng hiệu ứng nổi lên cho các card ở trang chủ */
+.post-card-hover {
+  @apply transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl;
+}
