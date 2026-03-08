@@ -1,5 +1,5 @@
 import { getPosts } from "@/lib/blogger";
-
+export const runtime = 'edge';
 export default async function LabelPage({ params }: { params: { slug: string } }) {
   // Giải mã slug từ URL (ví dụ: chung-khoan)
   const slug = params.slug;
