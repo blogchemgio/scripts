@@ -1,5 +1,5 @@
-const BLOG_ID = '8860933158336876517';
-const API_KEY = 'AIzaSyBkeq3GH90DX_eehyYRMiGTT72zcoNazsQ';
+const BLOG_ID = process.env.BLOGGER_BLOG_ID;
+const API_KEY = process.env.BLOGGER_API_KEY;
 
 export async function getPostById(id: string) {
   const res = await fetch(

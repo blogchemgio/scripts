@@ -6,8 +6,8 @@ export const dynamic = 'force-static';
 export const dynamicParams = false; 
 
 // Thông tin Blogger của bạn
-const BLOG_ID = '8860933158336876517';
-const API_KEY = 'AIzaSyBkeq3GH90DX_eehyYRMiGTT72zcoNazsQ';
+const BLOG_ID = process.env.BLOGGER_BLOG_ID;
+const API_KEY = process.env.BLOGGER_API_KEY;
 
 /**
  * Hàm lấy danh sách ID bài viết để tạo file HTML tĩnh lúc Build
